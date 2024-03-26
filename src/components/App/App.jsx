@@ -54,6 +54,9 @@ export class App extends Component {
   }
 
   getImages = async () => {
+    if (this.state.search === '') {
+      return;
+    }
     try {
       this.setState({ loading: true });
       const data = await getImagesApi(this.state.search, this.state.page, 12);
