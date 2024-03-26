@@ -22,7 +22,6 @@ export class App extends Component {
     this.setState({
       search: searchText.toLowerCase(),
       page: 1,
-      images: [],
     });
   };
 
@@ -42,21 +41,19 @@ export class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    if (this.state.search === true) {
+    if (this.state.error === true) {
       this.setState({ error: false });
     }
     if (
-      prevState.page !== this.state.page ||
-      prevState.search !== this.state.search
+      (prevState.page !== this.state.page ||
+        prevState.search !== this.state.search) &&
+      this.state.search !== ''
     ) {
       this.getImages();
     }
   }
 
   getImages = async () => {
-    if (this.state.search === '') {
-      return;
-    }
     try {
       this.setState({ loading: true });
       const data = await getImagesApi(this.state.search, this.state.page, 12);
@@ -74,6 +71,7 @@ export class App extends Component {
       this.setState({
         error: true,
         loadMore: false,
+        images: [],
       });
     } finally {
       this.setState({ loading: false });
@@ -81,7 +79,7 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images, loadMore, openedImage } = this.state;
+    const { loading, images, loadMore, openedImage, error } = this.state;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleSubmitSearchForm} />
@@ -98,6 +96,7 @@ export class App extends Component {
             }}
           />
         )}
+        {error && <h2>Something went wrong...</h2>}
       </div>
     );
   }
